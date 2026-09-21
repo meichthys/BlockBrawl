@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/banner.svg" alt="Block Brawl" width="100%">
+<img src="./banner.svg" alt="Block Brawl" width="100%">
 
 [![License: MIT-0](https://img.shields.io/badge/License-MIT--0-3fd8c9)](./LICENSE)
 [![Vanilla JavaScript](https://img.shields.io/badge/Vanilla-JavaScript-ffd166?logo=javascript&logoColor=121016)](./BlockBrawl.html)
@@ -9,7 +9,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-b56cff)](#contributing)
 [![GitHub stars](https://img.shields.io/github/stars/meichthys/BlockBrawl?style=social)](https://github.com/meichthys/BlockBrawl/stargazers)
 
-### 🎮 [![Play Now](https://img.shields.io/badge/PLAY_NOW-ff6b4a?style=for-the-badge)](https://meichthys.github.io/BlockBrawl/BlockBrawl.html)
+## [![Play Now](https://img.shields.io/badge/PLAY_NOW-ff6b4a?style=for-the-badge)](https://meichthys.github.io/BlockBrawl/BlockBrawl.html)
 
 *One file. No install. No account. Send a link, drop blocks, brawl.*
 
