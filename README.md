@@ -9,7 +9,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-b56cff)](#contributing)
 [![GitHub stars](https://img.shields.io/github/stars/meichthys/BlockBrawl?style=social)](https://github.com/meichthys/BlockBrawl/stargazers)
 
-## [![Play Now](https://img.shields.io/badge/PLAY_NOW-ff6b4a?style=for-the-badge)](https://meichthys.github.io/BlockBrawl/BlockBrawl.html)
+## [![Play Now](https://img.shields.io/badge/PLAY_NOW-ff6b4a?style=for-the-badge)](https://meichthys.github.io/BlockBrawl)
 
 *One file. No install. No account. Send a link, drop blocks, brawl.*
 
