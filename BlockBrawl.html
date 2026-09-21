@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><meta name="block-brawl-relay" content="1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><meta name="block-brawl-relay" content="1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body class="net">
 <title>Block Brawl</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,10 +72,17 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: 12px 24px;
     max-width: 1400px;
     margin: 0 auto 18px;
+  }
+  .clock {
+    margin: 0 auto;
+    font-family: var(--display);
+    font-size: 18px;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .04em;
   }
   .brand {
     font-family: var(--display);
@@ -105,13 +112,6 @@
   }
   .tally.t1 b { color: var(--p1); }
   .tally.t2 b { color: var(--p2); }
-  .clock {
-    font-family: var(--display);
-    font-size: 18px;
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: .04em;
-  }
   .ghostbtn {
     padding: 6px 12px;
     border: 1px solid var(--edge);
@@ -124,6 +124,10 @@
     text-transform: uppercase;
   }
   .ghostbtn:hover { color: var(--text); border-color: var(--dim); }
+  .iconbtn { display: inline-flex; align-items: center; justify-content: center; padding: 7px; line-height: 0; }
+  .iconbtn .icon-off { display: none; }
+  .iconbtn.muted .icon-on { display: none; }
+  .iconbtn.muted .icon-off { display: inline-flex; }
 
   /* arena */
   .arena {
@@ -171,15 +175,16 @@
   }
   .head {
     grid-area: head;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
     gap: 12px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--edge-soft);
   }
-  .p2 .head { flex-direction: row-reverse; }
-  .p2 .head .who { text-align: right; }
+  .head .who { grid-column: 1; }
+  .p2 .head .who { grid-column: 3; text-align: right; }
+  .head .score { grid-column: 2; justify-self: center; }
   .pname {
     font-family: var(--display);
     font-size: 16px;
@@ -294,6 +299,29 @@
   .fxrow .fxtime { grid-column: 3; font-family: var(--display); font-size: 16px; font-variant-numeric: tabular-nums; }
   .fxrow .bar { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--gold); }
 
+  .fxflash {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%) scale(.7);
+    max-width: 90%;
+    font-family: var(--display);
+    font-size: calc(var(--cell) * 1.05);
+    line-height: 1.1;
+    color: var(--gold);
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .7), 0 0 22px rgba(255, 209, 102, .55);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 4;
+  }
+  .fxflash.show { animation: fxflash 1.3s cubic-bezier(.2, .7, .3, 1) forwards; }
+  @keyframes fxflash {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(.7); }
+    10%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    30%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -300%) scale(.5); }
+  }
+
   /* spine */
   .spine { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
   .vs {
@@ -399,8 +427,8 @@
   .net .rig.local { order: 0; }
   .net .spine { order: 1; }
   .net .rig.remote { order: 2; }
-  .net .rig.local .pname::after { content: " · you"; color: var(--muted); }
-  .net .rig.remote .pname::after { content: " · them"; color: var(--muted); }
+  .net .rig.local .pname::after { content: " · you"; color: var(--text); font-weight: 600; }
+  .net .rig.remote .pname::after { content: " · them"; color: var(--text); font-weight: 600; }
   .peek { display: none; flex-direction: column; gap: 5px; }
   .peek canvas { display: block; width: 100%; aspect-ratio: 1 / 2; border: 1px solid var(--edge-soft); border-radius: 3px; background: #0e0a18; }
   .peek .peekscore { font-family: var(--display); font-size: 12px; text-align: center; font-variant-numeric: tabular-nums; }
@@ -412,6 +440,19 @@
   .netpanel .status.ok { color: #5be37a; }
   .netpanel .status.warn { color: var(--gold); }
   .linkbtn { margin-top: 8px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 12px; text-decoration: underline; }
+  .copybtn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px;
+    border: 1px solid var(--edge);
+    border-radius: 999px;
+    background: var(--panel);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    cursor: pointer;
+  }
+  .copybtn:hover { border-color: var(--gold); color: var(--gold); }
   .bigbtn:disabled { opacity: .45; cursor: not-allowed; }
 
   /* phones and small tablets: both rigs must fit one screen */
@@ -534,15 +575,18 @@
 
 <header class="top">
   <h1 class="brand"><span class="b1">BLOCK</span> <span class="b2">BRAWL</span></h1>
+  <span class="clock" id="clock">00:00</span>
   <div class="matchbar">
     <span class="tally t1"><b id="wins1">0</b> P1 wins</span>
-    <span class="clock" id="clock">00:00</span>
     <span class="netchip" id="netchip"><i></i><span id="netchip-text">Online</span></span>
     <span class="tally t2">P2 wins <b id="wins2">0</b></span>
     <button class="ghostbtn" id="pause" type="button">Pause</button>
     <button class="ghostbtn" id="touchbtn" type="button" aria-pressed="false">Touch pad off</button>
     <button class="ghostbtn" id="faceoff" type="button" aria-pressed="false">Face each other</button>
-    <button class="ghostbtn" id="mute" type="button" aria-pressed="false">Sound on</button>
+    <button class="ghostbtn iconbtn" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">
+      <svg class="icon-on" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4,9 8,9 12,5 12,19 8,15 4,15"/><path d="M16 8a5 5 0 0 1 0 8"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      <svg class="icon-off" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4,9 8,9 12,5 12,19 8,15 4,15"/><line x1="16" y1="9" x2="21" y2="14"/><line x1="21" y1="9" x2="16" y2="14"/></svg>
+    </button>
   </div>
 </header>
 
@@ -560,7 +604,7 @@
         <div><dt>Sent</dt><dd id="sent1">0</dd></div>
       </dl>
     </div>
-    <div class="board" id="board1"><canvas id="canvas1"></canvas><div class="meter" id="meter1"></div></div>
+    <div class="board" id="board1"><canvas id="canvas1"></canvas><div class="meter" id="meter1"></div><div class="fxflash" id="fxflash1"></div></div>
     <div class="col next"><div class="slot"><span class="lbl">Next</span><canvas class="next" id="next1"></canvas></div><div class="peek"><span class="lbl">Them</span><canvas id="peek1"></canvas><div class="peekscore" id="peekscore1">0</div></div></div>
     <div class="fx" id="fx1" role="status"></div>
     <div class="pad" id="pad1"></div>
@@ -598,7 +642,7 @@
         <div><dt>Sent</dt><dd id="sent2">0</dd></div>
       </dl>
     </div>
-    <div class="board" id="board2"><canvas id="canvas2"></canvas><div class="meter" id="meter2"></div></div>
+    <div class="board" id="board2"><canvas id="canvas2"></canvas><div class="meter" id="meter2"></div><div class="fxflash" id="fxflash2"></div></div>
     <div class="col next"><div class="slot"><span class="lbl">Next</span><canvas class="next" id="next2"></canvas></div><div class="peek"><span class="lbl">Them</span><canvas id="peek2"></canvas><div class="peekscore" id="peekscore2">0</div></div></div>
     <div class="fx" id="fx2" role="status"></div>
     <div class="pad" id="pad2"></div>
@@ -623,10 +667,12 @@
   <div class="card">
     <div class="ov-idle" id="ov-idle">
       <div class="ov-title"><span class="c1">BLOCK</span> <span class="c2">BRAWL</span></div>
-      <p class="ov-sub">Two players on one keyboard, one touchscreen, or two phones on the same Wi-Fi. Clear lines to bury your opponent. Clear two gold <b>?</b> blocks in one line to hand them a surprise.</p>
+      <p class="ov-sub">Play someone else online from anywhere, or share one keyboard or touchscreen. Clear lines to bury your opponent. Clear two gold <b>?</b> blocks in one line to hand them a surprise.</p>
       <div class="netpanel" id="netpanel">
-        <div class="status" id="netstatus">Connecting to the server…</div>
+        <div class="status" id="netstatus">Connecting…</div>
         <div id="netdetail" style="margin-top:4px;color:var(--muted)"></div>
+        <div id="netshare" style="margin-top:8px;color:var(--muted)"></div>
+        <button class="linkbtn" id="netreset" type="button">Reset connection</button>
         <button class="linkbtn" id="netleave" type="button">Play two players on this device instead</button>
       </div>
       <div class="controls key-only same-device-only" id="controls-ov"></div>
@@ -792,7 +838,7 @@
       this.keys = KEYS[index];
       this.rigEl = $('rig' + n); this.boardEl = $('board' + n);
       this.canvas = $('canvas' + n); this.holdCanvas = $('hold' + n); this.nextCanvas = $('next' + n);
-      this.meterEl = $('meter' + n); this.fxEl = $('fx' + n);
+      this.meterEl = $('meter' + n); this.fxEl = $('fx' + n); this.fxFlashEl = $('fxflash' + n);
       this.peekCanvas = $('peek' + (3 - n)); this.peekScore = $('peekscore' + (3 - n));
       this.ui = { score: $('score' + n), lines: $('lines' + n), level: $('level' + n), sent: $('sent' + n) };
       this.meterSig = ''; this.fxSig = ''; this.remote = false;
@@ -1038,6 +1084,8 @@
       e.total = seconds ? seconds * 1000 : null;
       e.linesLeft = def.lines ?? null; e.piecesLeft = def.pieces ?? null;
       if (def.apply) def.apply(this, e);
+      this.fxFlashEl.textContent = def.name;
+      this.fxFlashEl.classList.remove('show'); void this.fxFlashEl.offsetWidth; this.fxFlashEl.classList.add('show');
     }
 
     tickEffects() {
@@ -1180,6 +1228,14 @@
   const players = [new Player(0), new Player(1)];
   const overlay = $('overlay'), feedEl = $('feed');
 
+  // Optional TURN relay(s) for players behind restrictive NATs/firewalls where
+  // a direct connection can't be established. Trystero's default STUN servers
+  // are used either way - this only adds a fallback relay path. Leave empty to
+  // skip it (direct-only, which is what's currently unreliable for you).
+  //   { urls: 'turn:your-turn-host:3478', username: 'user', credential: 'pass' }
+  const TURN_SERVERS = [
+  ];
+
   const net = {
     room: null, msgAction: null, active: false, slot: 0, peer: false,
     selfId: null, opponentId: null, peers: null, lastSent: 0, left: false,
@@ -1199,11 +1255,41 @@
       // Table is just 'table' by default - open the file anywhere and any two
       // copies find each other. Add ?room=whatever to the URL on both sides if
       // you want a private table instead of the shared default one.
-      const table = new URLSearchParams(location.search).get('room') || 'table';
-      this.room = joinRoom({ appId: 'block-brawl-p2p' }, table);
+      // Room code lives in the URL hash (#room=xxxx), not the query string -
+      // some free static-hosting tricks (see reply) use the query string for
+      // their own purposes, and the hash is never sent to any server anyway.
+      const hashParams = new URLSearchParams(location.hash.slice(1));
+      let table = hashParams.get('room');
+      if (!table) {
+        table = Math.random().toString(36).slice(2, 8);
+        hashParams.set('room', table);
+        history.replaceState(null, '', location.pathname + location.search + '#' + hashParams.toString());
+      }
+      $('netshare').innerHTML = `Share this link so someone can join you: <code>${table}</code> <button class="copybtn" id="netcopy" type="button">Copy link</button>`;
+      $('netcopy').addEventListener('click', () => {
+        const btn = $('netcopy');
+        const reset = () => { btn.textContent = 'Copy link'; };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(location.href)
+            .then(() => { btn.textContent = 'Copied!'; setTimeout(reset, 1500); })
+            .catch(() => { btn.textContent = 'Copy failed - select the address bar'; setTimeout(reset, 2000); });
+        } else {
+          btn.textContent = 'Copy failed - select the address bar';
+          setTimeout(reset, 2000);
+        }
+      });
+      const config = { appId: 'block-brawl-p2p' };
+      if (TURN_SERVERS.length) config.turnConfig = TURN_SERVERS;
+      this.room = joinRoom(config, table, {
+        onJoinError: ({ peerId, error }) => {
+          console.warn('block-brawl connection failure with', peerId, error);
+          this.status('Could not connect directly to the other player - this usually means a TURN relay is needed for one of your networks. Refresh to retry.', 'warn');
+        }
+      });
       this.msgAction = this.room.makeAction('msg');
       this.msgAction.onMessage = (data, { peerId }) => { if (peerId === this.opponentId) this.handle(data); };
       this.room.onPeerJoin = peerId => {
+        console.log('[block-brawl] peer joined:', peerId);
         this.peers.add(peerId);
         // Someone's already here - seat immediately rather than waiting for
         // the fallback timer below. If we're already seated, they're our
@@ -1212,6 +1298,7 @@
         if (!this.opponentId) { this.opponentId = peerId; this.peer = true; this.refresh(); }
       };
       this.room.onPeerLeave = peerId => {
+        console.log('[block-brawl] peer left:', peerId);
         this.peers.delete(peerId);
         if (peerId === this.opponentId) { this.opponentId = null; this.peer = false; this.toIdle(); this.refresh(); }
       };
@@ -1244,20 +1331,33 @@
       this.active = true;
       document.body.classList.add('net');
       players.forEach(p => { p.remote = p !== this.local; p.rigEl.classList.toggle('local', !p.remote); p.rigEl.classList.toggle('remote', p.remote); });
-      $('netchip-text').textContent = `You are Player ${this.slot}`;
       this.toIdle(); this.refresh();
     },
     toIdle() { if (game.state !== 'idle') { game.state = 'idle'; players.forEach(p => p.reset()); showOverlay('idle'); } },
     refresh() {
       $('netchip').classList.toggle('on', this.peer);
-      if (this.peer) this.status(`Player ${3 - this.slot} is on the other phone. Start when you are both ready.`, 'ok');
-      else this.status(`You are Player ${this.slot}. Waiting for the other phone to open this page…`, 'warn');
+      if (this.peer) {
+        this.status(`Player ${3 - this.slot} is on the other phone. Start when you are both ready.`, 'ok');
+        $('netdetail').textContent = `Connected to ${this.opponentId.slice(0, 10)}…`;
+      } else {
+        this.status(`You are Player ${this.slot}. Waiting for the other phone to open this page…`, 'warn');
+        $('netdetail').textContent = '';
+      }
       $('start').disabled = !this.peer; $('rematch').disabled = !this.peer;
     },
     status(text, tone) { $('netstatus').textContent = text; $('netstatus').className = 'status' + (tone ? ' ' + tone : ''); },
     tick(now) {
       if (!this.active || game.state !== 'playing' || now - this.lastSent < 50) return;
       this.lastSent = now; this.send(this.local.snapshot());
+    },
+    reconnect() {
+      this.toIdle();
+      if (this.room) this.room.leave();
+      this.room = null; this.active = false; this.peer = false; this.opponentId = null;
+      this.peers = null; this.slot = 0; this.left = false;
+      players.forEach(p => { p.remote = false; p.rigEl.classList.remove('local', 'remote'); });
+      $('netdetail').textContent = '';
+      this.connect();
     },
     leave() {
       this.left = true;
@@ -1355,6 +1455,7 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden && game.state === 'playing') togglePause(); });
   $('start').addEventListener('click', () => startMatch());
   $('rematch').addEventListener('click', () => startMatch());
+  $('netreset').addEventListener('click', () => net.reconnect());
   $('netleave').addEventListener('click', () => net.leave());
   $('resume').addEventListener('click', togglePause);
   $('pause').addEventListener('click', togglePause);
@@ -1396,8 +1497,9 @@
 
   function toggleMute() {
     sfx.on = !sfx.on; if (sfx.on) sfx.init();
-    $('mute').textContent = sfx.on ? 'Sound on' : 'Muted';
+    $('mute').classList.toggle('muted', !sfx.on);
     $('mute').setAttribute('aria-pressed', String(!sfx.on));
+    $('mute').setAttribute('aria-label', sfx.on ? 'Mute sound' : 'Unmute sound');
   }
 
   function saveWins() { try { localStorage.setItem('blockbrawl.wins', JSON.stringify(game.wins)); } catch (e) {} }
