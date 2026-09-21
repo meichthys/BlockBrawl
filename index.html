@@ -1236,6 +1236,26 @@
   const TURN_SERVERS = [
   ];
 
+  // Alternative to the above: a free TURN relay from Metered's Open Relay
+  // project (20 GB/month free, no backend needed - metered.ca/tools/openrelay).
+  // Sign up, put your app name + API key below. Ignored if TURN_SERVERS above
+  // is non-empty; ignored (silently) if left blank.
+  // We don't care about this API Key - we have no payment or personal details tied to it and it is a free service.
+  const OPEN_RELAY = { appName: 'pairdrop', apiKey: '59e5a4023a137c838384dda676da94d1b5ea' };
+
+  async function getTurnServers() {
+    if (TURN_SERVERS.length) return TURN_SERVERS;
+    if (!OPEN_RELAY.appName || !OPEN_RELAY.apiKey) return [];
+    try {
+      const res = await fetch(`https://${OPEN_RELAY.appName}.metered.live/api/v1/turn/credentials?apiKey=${OPEN_RELAY.apiKey}`);
+      if (!res.ok) throw new Error('bad response ' + res.status);
+      return await res.json();
+    } catch (e) {
+      console.warn('block-brawl: could not fetch Open Relay TURN credentials', e);
+      return [];
+    }
+  }
+
   const net = {
     room: null, msgAction: null, active: false, slot: 0, peer: false,
     selfId: null, opponentId: null, peers: null, lastSent: 0, left: false,
@@ -1279,7 +1299,8 @@
         }
       });
       const config = { appId: 'block-brawl-p2p' };
-      if (TURN_SERVERS.length) config.turnConfig = TURN_SERVERS;
+      const turnServers = await getTurnServers();
+      if (turnServers.length) config.turnConfig = turnServers;
       this.room = joinRoom(config, table, {
         onJoinError: ({ peerId, error }) => {
           console.warn('block-brawl connection failure with', peerId, error);
